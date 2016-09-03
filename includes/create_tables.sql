@@ -1,0 +1,8 @@
+# ECONMIENDAS DETALLES
+CREATE TABLE avisos (
+  aviso_id int(11) NOT NULL AUTO_INCREMENT,
+  usuario_id int(11) NOT NULL,
+  fecha timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  aviso varchar(2000) DEFAULT '',
+  PRIMARY KEY (aviso_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
