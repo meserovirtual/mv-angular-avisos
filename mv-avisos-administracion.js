@@ -3,22 +3,21 @@
     'use strict';
 
 
-    angular.module('acAvisosAdministracion', [])
+    angular.module('mvAvisosAdministracion', [])
+        .component('mvAvisosAdministracion', mvAvisosAdministracion());
 
-        .component('acAvisosAdministracion', acAvisosAdministracion());
-
-    function acAvisosAdministracion() {
+    function mvAvisosAdministracion() {
         return {
             bindings: {
                 searchFunction: '&'
             },
-            templateUrl: window.installPath + '/ac-angular-avisos/ac-avisos-administracion.html',
-            controller: AcAvisosController
+            templateUrl: window.installPath + '/mv-angular-avisos/mv-avisos-administracion.html',
+            controller: MvAvisosController
         }
     }
 
-    AcAvisosController.$inject = ['AvisosService', 'UserService'];
-    function AcAvisosController(AvisosService, UserService) {
+    MvAvisosController.$inject = ['AvisosService', 'UserService'];
+    function MvAvisosController(AvisosService, UserService) {
         var vm = this;
         vm.avisos = [];
         vm.avisosOriginales = [];

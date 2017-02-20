@@ -4,7 +4,7 @@
     var scripts = document.getElementsByTagName("script");
     var currentScriptPath = scripts[scripts.length - 1].src;
 
-    angular.module('acAvisos', ['ngRoute'])
+    angular.module('mvAvisos', ['ngRoute'])
         .factory('AvisosService', AvisosService)
         .service('AvisosVars', AvisosVars);
 
@@ -12,7 +12,7 @@
     AvisosService.$inject = ['$http', 'AvisosVars', '$cacheFactory', 'AcUtils', 'AcUtilsGlobals', 'ErrorHandler', '$q'];
     function AvisosService($http, AvisosVars, $cacheFactory, AcUtils, AcUtilsGlobals, ErrorHandler, $q) {
         var service = {};
-        var url = window.installPath + '/ac-angular-avisos/includes/ac-avisos.php';
+        var url = window.installPath + '/mv-angular-avisos/includes/mv-avisos.php';
 
 
         service.get = get;
@@ -33,7 +33,6 @@
          * @returns {*}
          */
         function save(aviso) {
-
             var deferred = $q.defer();
 
             deferred.resolve(update(aviso));
@@ -66,10 +65,8 @@
             //    }
             //}
 
-
             return $http.get(urlGet, {cache: false})
                 .then(function (response) {
-
                     //$httpDefaultCache.put(urlGet, response.data);
                     AvisosVars.clearCache = false;
                     AcUtilsGlobals.stopWaiting();
@@ -101,18 +98,19 @@
          * @param callback
          * @description: Elimina el aviso seleccionado.
          */
-        function remove(aviso_id, callback) {
+        function remove(aviso_id) {
             return $http.post(url,
                 {function: 'remove', 'aviso_id': aviso_id})
-                .success(function (data) {
-                    //console.log(data);
+                .then(function (data) {
+                    console.log(data);
                     if (data !== 'false') {
                         AvisosVars.clearCache = true;
-                        callback(data);
+                        return data;
                     }
                 })
-                .error(function (data) {
-                    callback(data);
+                .catch(function (data) {
+                    AvisosVars.clearCache = true;
+                    ErrorHandler(data)
                 })
         }
 
