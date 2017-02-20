@@ -1,11 +1,39 @@
-<div class="lista">
+<div class="container container-bgk container-padding">
+    <h1 class="secciones">Avisos</h1>
+    <form class="" name="depositosForm" form-id="mv-depositos">
+        <div class="form-flex-around">
+            <div class="input">
+                <label>Tiempo de Plato Pedido</label>
+                <input type="number" step="0.01" ng-model="$ctrl.importe"
+                       mv-validator is-required="Debe ingresar el tiempo del plato pedido" id="tiempo_plato_pedido">
+            </div>
 
-    <input type="text" class="buscador" ng-model="$ctrl.avisos[0].aviso">
-    <input type="text" class="buscador" ng-model="$ctrl.avisos[1].aviso">
-    <input type="text" class="buscador" ng-model="$ctrl.avisos[2].aviso">
-    <input type="text" class="buscador" ng-model="$ctrl.avisos[3].aviso">
-    <div class="botonera">
-        <button ng-click="$ctrl.save();">{{'SAVE'|xlat}}</button>
-    </div>
+            <div class="input">
+                <label>Tiempo de Plato Confirmado</label>
+                <input type="number" step="0.01" ng-model="$ctrl.importe"
+                       mv-validator is-required="Debe ingresar el tiempo del plato confirmado" id="tiempo_plato_confirmado">
+            </div>
+        </div>
+
+        <div class="form-flex-around">
+            <div class="input">
+                <label>Stock Minimo</label>
+                <input type="number" step="0.01" ng-model="$ctrl.importe"
+                       mv-validator is-required="Debe ingresar un stock minimo" id="stock_minimo">
+            </div>
+
+            <div class="input">
+                <label>Tiempo de Plato no Confirmado</label>
+                <input type="number" step="0.01" ng-model="$ctrl.importe"
+                       mv-validator is-required="Debe ingresar el tiempo para el plato no confirmado" id="tiempo_plato_no_confirmado">
+            </div>
+        </div>
+
+        <div class="botonera">
+            <button class="boton-ok" mv-validator ng-click="$ctrl.save();">
+                <i class="fa fa-check" aria-hidden="true"></i>
+            </button>
+        </div>
+    </form>
 </div>
 

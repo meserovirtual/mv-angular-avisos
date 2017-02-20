@@ -9,8 +9,8 @@
         .service('AvisosVars', AvisosVars);
 
 
-    AvisosService.$inject = ['$http', 'AvisosVars', '$cacheFactory', 'AcUtils', 'AcUtilsGlobals', 'ErrorHandler', '$q'];
-    function AvisosService($http, AvisosVars, $cacheFactory, AcUtils, AcUtilsGlobals, ErrorHandler, $q) {
+    AvisosService.$inject = ['$http', 'AvisosVars', '$cacheFactory', 'MvUtils', 'MvUtilsGlobals', 'ErrorHandler', '$q'];
+    function AvisosService($http, AvisosVars, $cacheFactory, MvUtils, MvUtilsGlobals, ErrorHandler, $q) {
         var service = {};
         var url = window.installPath + '/mv-angular-avisos/includes/mv-avisos.php';
 
@@ -69,11 +69,11 @@
                 .then(function (response) {
                     //$httpDefaultCache.put(urlGet, response.data);
                     AvisosVars.clearCache = false;
-                    AcUtilsGlobals.stopWaiting();
+                    MvUtilsGlobals.stopWaiting();
                     return response.data;
                 })
                 .catch(function (response) {
-                    AcUtilsGlobals.stopWaiting();
+                    MvUtilsGlobals.stopWaiting();
                     ErrorHandler(response.data);
                     AvisosVars.clearCache = false;
                 })
@@ -87,7 +87,7 @@
          */
         function getByParams(params, values, exact_match, callback) {
             get(function (data) {
-                AcUtils.getByParams(params, values, exact_match, data, callback);
+                MvUtils.getByParams(params, values, exact_match, data, callback);
             })
         }
 
