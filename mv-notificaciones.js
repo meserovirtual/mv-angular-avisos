@@ -14,12 +14,33 @@
         }
     }
 
-    MvNotificacionesController.$inject = ['AvisosService', 'UserService'];
-    function MvNotificacionesController(AvisosService, UserService) {
+    MvNotificacionesController.$inject = ['AvisosService', 'UserService', 'StockService', '$interval'];
+    function MvNotificacionesController(AvisosService, UserService, StockService, $interval) {
 
         var vm = this;
         vm.avisos = [];
+        vm.aReponer = [];
         vm.avisosOriginales = [];
+
+        //console.log(UserService.getFromToken().data);
+
+        if(UserService.getFromToken().data != undefined) {
+            loadAvisos();
+        }
+
+        function loadAvisos() {
+            console.log('cargar avisos');
+
+            $interval(function () {
+                StockService.getAReponer(UserService.getFromToken().data.sucursal_id).then(function(data){
+                    console.log(data);
+                    vm.aReponer = data;
+                }).catch(function(data){
+                    console.log(data);
+                });
+            }, 30000);
+
+        }
 
         AvisosService.get().then(function (data) {
             vm.avisos = data;
