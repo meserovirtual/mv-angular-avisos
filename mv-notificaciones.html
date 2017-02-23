@@ -1,5 +1,17 @@
 <div class="form-flex-center">
-    <img src="images/bell.png" alt="Notificacion" height="32" width="32">
+    <img class="avisos-img" src="images/bell.png" alt="Notificacion" height="32" width="32" ng-click="$ctrl.showAvisos=!$ctrl.showAvisos">
     <div class="notify-count">{{$ctrl.aReponer.length}}</div>
+</div>
+<div class="form-flex-center avisos-margin-top avisos-animation-out" ng-class="{'avisos-animation-in':$ctrl.showAvisos}">
+    <div class="avisos-container-1">
+        <div class="avisos-container-2 font-small">
+            <div class="avisos-left avisos-margin center-text">Fecha y Hora</div>
+            <div class="avisos-right avisos-margin center-text">Aviso</div>
+        </div>
+        <div ng-repeat="aviso in $ctrl.avisos" class="avisos-container-2 font-small">
+            <div class="avisos-left avisos-margin center-text">{{aviso.fecha}}</div>
+            <div class="avisos-right avisos-margin">{{aviso.aviso}}</div>
+        </div>
+    </div>
 </div>
 

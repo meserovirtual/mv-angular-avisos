@@ -18,11 +18,11 @@
     function MvNotificacionesController(AvisosService, UserService, StockService, $interval) {
 
         var vm = this;
+        vm.showAvisos = false;
         vm.avisos = [];
         vm.aReponer = [];
-        vm.avisosOriginales = [];
 
-        console.log(UserService.getFromToken().data);
+        //console.log(UserService.getFromToken().data);
 
         if(UserService.getFromToken().data != undefined) {
             loadAReponer();
@@ -36,6 +36,8 @@
                     if(data.length > 0) {
                         vm.aReponer = data;
                         var aviso = {usuario_id: UserService.getFromToken().data.id, aviso: armarAvisoStockAReponer(data)};
+                        loadAvisos();
+
                         AvisosService.create(aviso).then(function(data){
                             if(data > 0) {
                                 loadAvisos();
@@ -43,11 +45,13 @@
                         }).catch(function(data){
                             console.log(data);
                         })
+
                     }
                 }).catch(function(data){
                     console.log(data);
                 });
-            }, 300000);
+            }, 10000);
+            //}, 600000); //Productivo tendra un timer de 1 hr, 60 minutos           
 
         }
 
@@ -61,17 +65,14 @@
 
         function loadAvisos() {
             AvisosService.get().then(function (data) {
-                vm.avisos = data;
-                vm.avisosOriginales = [];
-                for(var i =0; i<data.length; i++){
-                    vm.avisosOriginales.push(angular.copy(data[i]));
+                vm.avisos = [];
+                for(var i=0; i <= 4; i++){
+                    vm.avisos.push(data[i]);
                 }
-                console.log(vm.avisosOriginales);
             });
         }
 
     }
-
 
 })();
 
