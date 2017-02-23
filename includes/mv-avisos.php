@@ -113,7 +113,7 @@ class Avisos extends Main
      */
     function remove($params)
     {
-        $db = new MysqliDb();
+        $db = self::$instance->db;
 
         $db->where("aviso_id", $params["aviso_id"]);
         $results = $db->delete('avisos');

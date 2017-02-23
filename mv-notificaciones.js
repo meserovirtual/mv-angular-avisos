@@ -21,6 +21,7 @@
         vm.showAvisos = false;
         vm.avisos = [];
         vm.aReponer = [];
+        vm.avisosOriginales = [];
 
         //console.log(UserService.getFromToken().data);
 
@@ -50,8 +51,8 @@
                 }).catch(function(data){
                     console.log(data);
                 });
-            }, 10000);
-            //}, 600000); //Productivo tendra un timer de 1 hr, 60 minutos           
+                //}, 300000);
+            }, 600000); //Productivo tendra un timer de 1 hr, 60 minutos
 
         }
 

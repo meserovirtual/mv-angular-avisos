@@ -35,48 +35,54 @@
         function save(aviso) {
             var deferred = $q.defer();
 
-            deferred.resolve(update(aviso));
-            //if (aviso.aviso_id != undefined) {
-            //    deferred.resolve(update(aviso));
-            //} else {
-            //    deferred.resolve(create(aviso));
-            //}
+            if (aviso.aviso_id != undefined) {
+                deferred.resolve(update(aviso));
+            } else {
+                deferred.resolve(create(aviso));
+            }
             return deferred.promise;
         }
 
         function get() {
-            //AcUtilsGlobals.startWaiting();
+            MvUtilsGlobals.startWaiting();
             var urlGet = url + '?function=get';
-            //var $httpDefaultCache = $cacheFactory.get('$http');
-            //var cachedData = [];
-            //
-            //
-            //// Verifica si existe el cache de avisos
-            //if ($httpDefaultCache.get(urlGet) != undefined) {
-            //    if (AvisosVars.clearCache) {
-            //        $httpDefaultCache.remove(urlGet);
-            //    }
-            //    else {
-            //        var deferred = $q.defer();
-            //        cachedData = $httpDefaultCache.get(urlGet);
-            //        deferred.resolve(cachedData);
-            //        AcUtilsGlobals.stopWaiting();
-            //        return deferred.promise;
-            //    }
-            //}
+            var $httpDefaultCache = $cacheFactory.get('$http');
+            var cachedData = [];
 
-            return $http.get(urlGet, {cache: false})
+            // Verifica si existe el cache de usuarios
+            if ($httpDefaultCache.get(urlGet) != undefined) {
+                if (AvisosVars.clearCache) {
+                    $httpDefaultCache.remove(urlGet);
+                }
+                else {
+                    var deferred = $q.defer();
+                    cachedData = $httpDefaultCache.get(urlGet);
+                    deferred.resolve(cachedData);
+                    MvUtilsGlobals.stopWaiting();
+                    return deferred.promise;
+                }
+            }
+
+            return $http.get(urlGet, {cache: true})
                 .then(function (response) {
-                    //$httpDefaultCache.put(urlGet, response.data);
+
+                    for (var x in response.data) {
+                        response.data[x].cajas = [];
+                        for (var i = 1; i <= response.data[x].pos_cantidad; i++) {
+                            response.data[x].cajas.push({caja_id: i, nombre: 'Caja ' + i})
+                        }
+                    }
+
+                    $httpDefaultCache.put(urlGet, response.data);
                     AvisosVars.clearCache = false;
+                    AvisosVars.paginas = (response.data.length % AvisosVars.paginacion == 0) ? parseInt(response.data.length / AvisosVars.paginacion) : parseInt(response.data.length / AvisosVars.paginacion) + 1;
                     MvUtilsGlobals.stopWaiting();
                     return response.data;
                 })
                 .catch(function (response) {
                     MvUtilsGlobals.stopWaiting();
-                    ErrorHandler(response.data);
-                    AvisosVars.clearCache = false;
-                })
+                    ErrorHandler(response);
+                });
         }
 
         /**
@@ -103,7 +109,7 @@
                 {function: 'remove', 'aviso_id': aviso_id})
                 .then(function (data) {
                     console.log(data);
-                    if (data !== 'false') {
+                    if (data.status == 200) {
                         AvisosVars.clearCache = true;
                         return data;
                     }
@@ -159,6 +165,97 @@
                 });
         }
 
+
+        /**
+         * Para el uso de la p�ginaci�n, definir en el controlador las siguientes variables:
+         *
+         vm.start = 0;
+         vm.pagina = SucursalesVars.pagina;
+         SucursalesVars.paginacion = 5; Cantidad de registros por p�gina
+         vm.end = SucursalesVars.paginacion;
+
+
+         En el HTML, en el ng-repeat agregar el siguiente filtro: limitTo:appCtrl.end:appCtrl.start;
+
+         Agregar un bot�n de next:
+         <button ng-click="appCtrl.next()">next</button>
+
+         Agregar un bot�n de prev:
+         <button ng-click="appCtrl.prev()">prev</button>
+
+         Agregar un input para la p�gina:
+         <input type="text" ng-keyup="appCtrl.goToPagina()" ng-model="appCtrl.pagina">
+
+         */
+
+
+        /**
+         * @description: Ir a p�gina
+         * @param pagina
+         * @returns {*}
+         * uso: agregar un m�todo
+         vm.goToPagina = function () {
+                vm.start= SucursalesService.goToPagina(vm.pagina).start;
+            };
+         */
+        function goToPagina(pagina) {
+            if (isNaN(pagina) || pagina < 1) {
+                AvisosVars.pagina = 1;
+                return AvisosVars;
+            }
+
+            if (pagina > AvisosVars.paginas) {
+                AvisosVars.pagina = AvisosVars.paginas;
+                return AvisosVars;
+            }
+
+            AvisosVars.pagina = pagina - 1;
+            AvisosVars.start = AvisosVars.pagina * AvisosVars.paginacion;
+            return AvisosVars;
+
+        }
+
+        /**
+         * @name next
+         * @description Ir a pr�xima p�gina
+         * @returns {*}
+         * uso agregar un metodo
+         vm.next = function () {
+                vm.start = SucursalesService.next().start;
+                vm.pagina = SucursalesVars.pagina;
+            };
+         */
+        function next() {
+            if (AvisosVars.pagina + 1 > AvisosVars.paginas) {
+                return AvisosVars;
+            }
+            AvisosVars.start = (AvisosVars.pagina * AvisosVars.paginacion);
+            AvisosVars.pagina = AvisosVars.pagina + 1;
+            //SucursalesVars.end = SucursalesVars.start + SucursalesVars.paginacion;
+            return AvisosVars;
+        }
+
+        /**
+         * @name previous
+         * @description Ir a p�gina anterior
+         * @returns {*}
+         * uso, agregar un m�todo
+         vm.prev = function () {
+                vm.start= SucursalesService.prev().start;
+                vm.pagina = SucursalesVars.pagina;
+            };
+         */
+        function prev() {
+            if (AvisosVars.pagina - 2 < 0) {
+                return AvisosVars;
+            }
+            //SucursalesVars.end = SucursalesVars.start;
+            AvisosVars.start = (AvisosVars.pagina - 2 ) * AvisosVars.paginacion;
+            AvisosVars.pagina = AvisosVars.pagina - 1;
+            return AvisosVars;
+        }
+
+
     }
 
 
@@ -168,11 +265,18 @@
      * @constructor
      */
     function AvisosVars() {
-
-
+        // Cantidad de páginas total del recordset
+        this.paginas = 1;
+        // Página seleccionada
+        this.pagina = 1;
+        // Cantidad de registros por página
+        this.paginacion = 10;
+        // Registro inicial, no es página, es el registro
+        this.start = 0;
 
         // Indica si se debe limpiar el cache la próxima vez que se solicite un get
         this.clearCache = true;
 
     }
+
 })();
