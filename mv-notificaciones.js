@@ -43,11 +43,11 @@
                     console.log(data);
                 });
 
-                StockService.getAReponer(UserService.getFromToken().data.sucursal_id).then(function(data){
-                    console.log(data);
-                    if(data.length > 0) {
-                        vm.aReponer = data;
-                        var aviso = {usuario_id: UserService.getFromToken().data.id, aviso: armarAvisoStockAReponer(data)};
+                StockService.getAReponer(UserService.getFromToken().data.sucursal_id).then(function(aReponer){
+                    console.log(aReponer);
+                    if(aReponer.length > 0) {
+                        vm.aReponer = aReponer;
+                        var aviso = {usuario_id: UserService.getFromToken().data.id, aviso: armarAvisoStockAReponer(aReponer)};
                         loadAvisos();
 
                         AvisosService.create(aviso).then(function(data){
@@ -60,12 +60,12 @@
                                 mensaje = mensaje + '<th style="border: 1px solid black;background-color: #eee">Cant. Actual</th>';
                                 mensaje = mensaje + '</tr></thead><tbody>';
 
-                                for (var i = 0; i < data.length; i++) {
-
+                                for (var i = 0; i < aReponer.length; i++) {
+                                    console.log(aReponer[i]);
                                     mensaje = mensaje + '<tr>';
-                                    mensaje = mensaje + '<td style="font-size: 12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #515C4B;background-color: #293333;color: #fff;">' + data[i].nombre + '</td>';
-                                    mensaje = mensaje + '<td style="font-size: 12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #515C4B;background-color: #293333;color: #fff;">' + data[i].pto_repo + '</td>';
-                                    mensaje = mensaje + '<td style="font-size: 12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #515C4B;text-align:right;background-color: #293333;color: #fff;">$' + data[i].cant_actual + '</td>';
+                                    mensaje = mensaje + '<td style="font-size: 12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #515C4B;background-color: #293333;color: #fff;">' + aReponer[i].nombre + '</td>';
+                                    mensaje = mensaje + '<td style="font-size: 12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #515C4B;background-color: #293333;color: #fff;">' + aReponer[i].pto_repo + '</td>';
+                                    mensaje = mensaje + '<td style="font-size: 12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #515C4B;text-align:right;background-color: #293333;color: #fff;">$' + aReponer[i].cant_actual + '</td>';
                                     mensaje = mensaje + '</tr>';
 
                                 }
@@ -89,8 +89,8 @@
                 }).catch(function(data){
                     console.log(data);
                 });
-            }, 10000);
-            //}, 600000); //Productivo tendra un timer de 1 hr, 60 minutos
+                //}, 10000);
+            }, 600000); //Productivo tendra un timer de 1 hr, 60 minutos
 
         }
 
