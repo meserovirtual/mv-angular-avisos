@@ -126,8 +126,10 @@
                     console.log(data);
                 });
                 //}, 10000);
-                //}, 600000); //Productivo tendra un timer de 1 hr, 60 minutos
-            }, 1200000); //30 minutos
+                //}, 600000); //10 minutos
+                //}, 1200000); //20 minutos
+                //}, 2400000); //40 minutos
+            }, 3600000); //60 minutos
 
         }
 
