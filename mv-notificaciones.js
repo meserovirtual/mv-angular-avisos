@@ -25,7 +25,6 @@
 
         var sucursal = "";
 
-        console.log(UserService.getFromToken().data);
 
         if(UserService.getFromToken().data != undefined) {
             loadAReponer();
