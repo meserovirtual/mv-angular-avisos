@@ -217,7 +217,7 @@
         function loadAvisos() {
             AvisosService.get().then(function (data) {
                 vm.avisos = [];
-                for(var i=0; i <= 4; i++){
+                for(var i=0; i <= 3; i++){
                     vm.avisos.push(data[i]);
                 }
             });
