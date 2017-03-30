@@ -112,7 +112,7 @@
                 }).catch(function(data){
                     console.log(data);
                 });
-            }, 600000); //10 minutos
+            }, 28800000); //8 horas
 
         }
 
@@ -194,7 +194,8 @@
                 //}, 600000); //10 minutos
                 //}, 1200000); //20 minutos
                 //}, 2400000); //40 minutos
-            }, 3600000); //60 minutos
+            //}, 3600000); //60 minutos
+            }, 28800000); //8 horas
 
         }
 
