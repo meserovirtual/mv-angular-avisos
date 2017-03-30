@@ -14,8 +14,10 @@
         }
     }
 
-    MvNotificacionesController.$inject = ['AvisosService', 'UserService', 'StockService', '$interval', 'ContactsService', 'SucursalesService'];
-    function MvNotificacionesController(AvisosService, UserService, StockService, $interval, ContactsService, SucursalesService) {
+    MvNotificacionesController.$inject = ['AvisosService', 'UserService', 'StockService', '$interval', 'ContactsService',
+        'SucursalesService', 'ComandasService'];
+    function MvNotificacionesController(AvisosService, UserService, StockService, $interval, ContactsService,
+                                        SucursalesService, ComandasService) {
 
         var vm = this;
         vm.showAvisos = false;
@@ -26,8 +28,10 @@
         var sucursal = "";
 
 
+
         if(UserService.getFromToken().data != undefined) {
             loadAReponer();
+            loadComandasNoEntregadas();
         }
 
         function getCaja() {
@@ -38,17 +42,79 @@
         }
 
         SucursalesService.get().then(function(data){
-            console.log(data);
             for(var i=0; i <= data.length - 1; i++) {
                 if(data[i].sucursal_id == UserService.getFromToken().data.sucursal_id) {
                     sucursal = data[i].nombre;
-                    console.log(sucursal);
                     break;
                 }
             }
         }).catch(function(data){
             console.log(data);
         });
+
+        function loadComandasNoEntregadas() {
+
+            $interval(function () {
+
+                var comanda = {};
+                ComandasService.getComandaNoEntregadas(comanda).then(function(comandas){
+                    var aviso = {usuario_id: UserService.getFromToken().data.id, aviso: armarAvisoComandaNoEntregada(comandas)};
+
+                    AvisosService.create(aviso).then(function(data){
+                        console.log('armo el aviso');
+                        if(data > 0) {
+                            loadAvisos();
+                            var mensaje = '';
+
+                            mensaje = mensaje + '<div style="width:100%;background-color:#76986A;font-family:Arial;">';
+                            mensaje = mensaje + '<div style="height:80px;"><h2 style="color:#fff;text-align:center;">Comandas No Entregadas</h2></div>';
+                            mensaje = mensaje + '<div style="height:110px;background-color:#293333;">';
+                            mensaje = mensaje + '<div style="margin: 15px;padding-top:10px;border-bottom: 2px solid #fff;">';
+                            mensaje = mensaje + '<label style="color:#76986A;text-align:center;font-weight:bold;">Sucursal:</label>';
+                            mensaje = mensaje + '<label style="color:#fff;text-align:center;">' + sucursal + '</label></div>';
+                            mensaje = mensaje + '<div style="margin: 15px;border-bottom: 2px solid #fff;">';
+                            mensaje = mensaje + '<label style="color:#76986A;text-align:center;font-weight:bold;">Caja:</label>';
+                            mensaje = mensaje + '<label style="color:#fff;text-align:center;">' + getCaja() + '</label></div>';
+                            mensaje = mensaje + '<div style="margin: 15px;border-bottom: 2px solid #fff;">';
+                            mensaje = mensaje + '<label style="color:#76986A;text-align:center;font-weight:bold;">Fecha:</label>';
+                            mensaje = mensaje + '<label style="color:#fff;text-align:center;">' + new Date().getDate() + '/' + (new Date().getMonth() + 1) + '/' + new Date().getFullYear() + '</label></div></div>';
+
+                            mensaje = mensaje + '<table style="width:100%;"><thead><tr>';
+                            mensaje = mensaje + '<th style="border: 1px solid black;background-color:#293333;color:#fff;padding: 5px 0;">Comanda</th>';
+                            mensaje = mensaje + '<th style="border: 1px solid black;background-color:#293333;color:#fff;padding: 5px 0;">Fecha</th>';
+                            mensaje = mensaje + '<th style="border: 1px solid black;background-color:#293333;color:#fff;padding: 5px 0;">Tiempo</th>';
+                            mensaje = mensaje + '</tr></thead><tbody>';
+
+                            for (var i = 0; i < comandas.length; i++) {
+                                mensaje = mensaje + '<tr>';
+                                mensaje = mensaje + '<td style="font-size: 12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #000;background-color: #76986A;color: #fff;">' + comandas[i].comanda_id + '</td>';
+                                mensaje = mensaje + '<td style="font-size: 12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #000;text-align:center;background-color: #76986A;color: #fff;">' + comandas[i].fecha + '</td>';
+                                mensaje = mensaje + '<td style="font-size: 12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #000;text-align:center;background-color: #76986A;color: #fff;">' + '> 30 min' + '</td>';
+                                mensaje = mensaje + '</tr>';
+
+                            }
+                            mensaje = mensaje + '</tbody></table></div>';
+
+                            console.log('Se armo el mail de avisos');
+                            var sucursalHeader = 'Sucursal:' + sucursal + ' Caja: ' + getCaja() + ' Fecha: ' + new Date().getDate() + '/' + (new Date().getMonth() + 1) + '/' + new Date().getFullYear();
+
+                            ContactsService.sendMail(window.mailAdmin, mailAdmins, 'Mail de Comandas No Entregadas', sucursalHeader, mensaje).then(function (data) {
+                                console.log(data);
+                                //loadAvisos();
+                            }).catch(function(data){
+                                console.log(data);
+                            });
+                        }
+                    }).catch(function(data){
+                        console.log(data);
+                    });
+
+                }).catch(function(data){
+                    console.log(data);
+                });
+            }, 600000); //10 minutos
+
+        }
 
         function loadAReponer() {
 
@@ -97,7 +163,6 @@
                                 mensaje = mensaje + '</tr></thead><tbody>';
 
                                 for (var i = 0; i < aReponer.length; i++) {
-                                    console.log(aReponer[i]);
                                     mensaje = mensaje + '<tr>';
                                     mensaje = mensaje + '<td style="font-size: 12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #000;background-color: #76986A;color: #fff;">' + aReponer[i].nombre + '</td>';
                                     mensaje = mensaje + '<td style="font-size: 12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #000;text-align:center;background-color: #76986A;color: #fff;">' + aReponer[i].pto_repo + '</td>';
@@ -137,6 +202,14 @@
             var aux = '';
             for(var i = 0; i <= aReponer.length - 1; i++) {
                 aux += 'Produc:' + aReponer[i].producto_id + ' - ' + aReponer[i].nombre + ' - Cant Act:' + aReponer[i].cant_actual + ' - Pto Repo:' + aReponer[i].pto_repo + ' - ';
+            }
+            return aux;
+        }
+
+        function armarAvisoComandaNoEntregada(comandas) {
+            var aux = '';
+            for(var i = 0; i <= comandas.length - 1; i++) {
+                aux += 'Comanda: ' + comandas[i].comanda_id + ' - ';
             }
             return aux;
         }
