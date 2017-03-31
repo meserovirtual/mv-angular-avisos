@@ -42,7 +42,7 @@ class Avisos extends Main
 
 //        $results = $db->get('avisos');
 
-        $results = $db->rawQuery('Select u.usuario_id, u.nombre, u.apellido, a.aviso_id, a.fecha, a.aviso from avisos a inner join usuarios u on u.usuario_id = a.usuario_id;');
+        $results = $db->rawQuery('Select u.usuario_id, u.nombre, u.apellido, a.aviso_id, a.fecha, a.aviso from avisos a inner join usuarios u on u.usuario_id = a.usuario_id ORDER By a.fecha DESC;');
 
         echo json_encode($results);
     }
