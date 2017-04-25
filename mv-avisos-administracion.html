@@ -57,14 +57,14 @@
             <h2>Nuevo Aviso</h2>
 
             <div class="mv-col">
-                <div class="input" data-tip="Fecha y Hora">
-                    <input type="text" class="readonly" ng-model="$ctrl.aviso.fecha" readonly>
+                <div style="width: 95%!important;" class="input" data-tip="Fecha y Hora">
+                    <input  style="width: 100%" type="text" placeholder="Fecha y Hora" class="botones" ng-model="$ctrl.aviso.fecha">
                 </div>
             </div>
 
             <div class="mv-col" style="flex-direction: column;">
                 <div class="input" data-tip="Aviso">
-                    <textarea id="aviso" name="aviso" ng-model="$ctrl.aviso.aviso" ng-maxlength="3000"
+                    <textarea id="aviso" name="aviso" placeholder="Describa aquí el aviso" ng-model="$ctrl.aviso.aviso" ng-maxlength="3000"
                               mv-validator is-required="El aviso es obligatorio"></textarea>
                 </div>
             </div>
