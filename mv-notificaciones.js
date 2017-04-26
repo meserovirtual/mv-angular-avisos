@@ -85,9 +85,10 @@
             }
 
             console.log(horas+":"+minutos);
+            var tiempo_transcurrido = horas+":"+minutos;
             if(parseInt(horas) > 0){
                 console.log('Producto con demora');
-                var aviso = {usuario_id: UserService.getFromToken().data.id, aviso: armarAvisoPlatoConDemora(comanda_id, origen_id, detalle)};
+                var aviso = {usuario_id: UserService.getFromToken().data.id, aviso: armarAvisoPlatoConDemora(comanda_id, origen_id, detalle, tiempo_transcurrido)};
 
                 AvisosService.create(aviso).then(function(data) {
                     console.log('armo el aviso');
@@ -98,8 +99,18 @@
                     console.log(error);
                 });
             } else {
-                if(parseInt(minutos) > tolerancia) {
+                if(parseInt(minutos) > detalle.tiempo_espera) {
                     console.log('Producto con demora');
+                    var aviso = {usuario_id: UserService.getFromToken().data.id, aviso: armarAvisoPlatoConDemora(comanda_id, origen_id, detalle, tiempo_transcurrido)};
+
+                    AvisosService.create(aviso).then(function(data) {
+                        console.log('armo el aviso');
+                        if (data > 0) {
+                            loadAvisos();
+                        }
+                    }).catch(function(error){
+                        console.log(error);
+                    });
                 } else {
                     console.log('Producto sin demora');
                 }
@@ -128,7 +139,9 @@
                 }).catch(function(data){
                     console.log(data);
                 });
-            }, 10000);
+            }, 300000); //5 minutos
+            //}, 600000); //10 minutos
+
         }
 
         function loadComandasNoEntregadas() {
@@ -294,10 +307,10 @@
             return aux;
         }
 
-        function armarAvisoPlatoConDemora(comanda_id, origen_id, detalle) {
+        function armarAvisoPlatoConDemora(comanda_id, origen_id, detalle, tiempo_transcurrido) {
             var aux = '';
 
-            aux = getOrigen(origen_id) + " #" + comanda_id + " - " + detalle.nombre;
+            aux = getOrigen(origen_id) + " #" + comanda_id + " - " + detalle.nombre + " - Tiempo: " + tiempo_transcurrido + " (Demorado)";
 
             return aux;
         }
