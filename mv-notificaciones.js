@@ -32,6 +32,7 @@
         if(UserService.getFromToken().data != undefined) {
             loadAReponer();
             loadComandasNoEntregadas();
+            loadPlatosTiempoEsperaExcedido();
         }
 
         function getCaja() {
@@ -51,6 +52,84 @@
         }).catch(function(data){
             console.log(data);
         });
+
+        function checkPlatoConDemora(comanda_id, origen_id, detalle) {
+            var currentDate = new Date();
+            var inicio = detalle.preparacion_inicio.substr(11,5);
+            var fin = currentDate.getHours()+':'+currentDate.getMinutes();
+
+
+            var inicioMinutos = parseInt(inicio.substr(3,2));
+            var inicioHoras = parseInt(inicio.substr(0,2));
+
+            var finMinutos = parseInt(fin.substr(3,2));
+            var finHoras = parseInt(fin.substr(0,2));
+
+            var transcurridoMinutos = finMinutos - inicioMinutos;
+            var transcurridoHoras = finHoras - inicioHoras;
+
+            if (transcurridoMinutos < 0) {
+                transcurridoHoras--;
+                transcurridoMinutos = 60 + transcurridoMinutos;
+            }
+
+            var horas = transcurridoHoras.toString();
+            var minutos = transcurridoMinutos.toString();
+
+            if (horas.length < 2) {
+                horas = "0"+horas;
+            }
+
+            if (horas.length < 2) {
+                horas = "0"+horas;
+            }
+
+            console.log(horas+":"+minutos);
+            if(parseInt(horas) > 0){
+                console.log('Producto con demora');
+                var aviso = {usuario_id: UserService.getFromToken().data.id, aviso: armarAvisoPlatoConDemora(comanda_id, origen_id, detalle)};
+
+                AvisosService.create(aviso).then(function(data) {
+                    console.log('armo el aviso');
+                    if (data > 0) {
+                        loadAvisos();
+                    }
+                }).catch(function(error){
+                    console.log(error);
+                });
+            } else {
+                if(parseInt(minutos) > tolerancia) {
+                    console.log('Producto con demora');
+                } else {
+                    console.log('Producto sin demora');
+                }
+            }
+        }
+
+        function loadPlatosTiempoEsperaExcedido() {
+            $interval(function () {
+                var comanda = {};
+                ComandasService.getPlatosTiempoEsperaExcedido(comanda).then(function(comandas){
+                    console.log(comandas);
+                    for(var i=0; i < comandas.length-1; i++) {
+                        //console.log(comandas[i]);
+                        var detalles = Object.getOwnPropertyNames(comandas[i].detalles);
+                        detalles.forEach(function (item, index2, array2) {
+
+                            if (typeof comandas[i].detalles[item] === 'object') {
+                                //console.log(comandas[i].detalles[item]);
+                                if(comandas[i].detalles[item].tiempo_espera > 0) {
+                                    checkPlatoConDemora(comandas[i].comanda_id,comandas[i].origen_id,comandas[i].detalles[item]);
+                                }
+                            }
+
+                        });
+                    }
+                }).catch(function(data){
+                    console.log(data);
+                });
+            }, 10000);
+        }
 
         function loadComandasNoEntregadas() {
 
@@ -194,7 +273,7 @@
                 //}, 600000); //10 minutos
                 //}, 1200000); //20 minutos
                 //}, 2400000); //40 minutos
-            //}, 3600000); //60 minutos
+                //}, 3600000); //60 minutos
             }, 28800000); //8 horas
 
         }
@@ -213,6 +292,23 @@
                 aux += 'Comanda: ' + comandas[i].comanda_id + ' - ';
             }
             return aux;
+        }
+
+        function armarAvisoPlatoConDemora(comanda_id, origen_id, detalle) {
+            var aux = '';
+
+            aux = getOrigen(origen_id) + " #" + comanda_id + " - " + detalle.nombre;
+
+            return aux;
+        }
+
+        function getOrigen(origen_id) {
+            if(origen_id == -1)
+                return "Mostrador";
+            else if(origen_id == -2)
+                return "Delivery"
+            else
+                return "Mesa"
         }
 
         function loadAvisos() {
