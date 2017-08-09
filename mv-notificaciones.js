@@ -50,7 +50,7 @@
                 }
             }
         }).catch(function(data){
-            console.log(data);
+            //console.log(data);
         });
 
         function checkPlatoConDemora(comanda_id, origen_id, detalle) {
@@ -84,35 +84,35 @@
                 horas = "0"+horas;
             }
 
-            console.log(horas+":"+minutos);
+            //console.log(horas+":"+minutos);
             var tiempo_transcurrido = horas+":"+minutos;
             if(parseInt(horas) > 0){
-                console.log('Producto con demora');
+                //console.log('Producto con demora');
                 var aviso = {usuario_id: UserService.getFromToken().data.id, aviso: armarAvisoPlatoConDemora(comanda_id, origen_id, detalle, tiempo_transcurrido)};
 
                 AvisosService.create(aviso).then(function(data) {
-                    console.log('armo el aviso');
+                    //console.log('armo el aviso');
                     if (data > 0) {
                         loadAvisos();
                     }
                 }).catch(function(error){
-                    console.log(error);
+                    //console.log(error);
                 });
             } else {
                 if(parseInt(minutos) > detalle.tiempo_espera) {
-                    console.log('Producto con demora');
+                    //console.log('Producto con demora');
                     var aviso = {usuario_id: UserService.getFromToken().data.id, aviso: armarAvisoPlatoConDemora(comanda_id, origen_id, detalle, tiempo_transcurrido)};
 
                     AvisosService.create(aviso).then(function(data) {
-                        console.log('armo el aviso');
+                        //console.log('armo el aviso');
                         if (data > 0) {
                             loadAvisos();
                         }
                     }).catch(function(error){
-                        console.log(error);
+                        //console.log(error);
                     });
                 } else {
-                    console.log('Producto sin demora');
+                    //console.log('Producto sin demora');
                 }
             }
         }
@@ -121,7 +121,7 @@
             $interval(function () {
                 var comanda = {};
                 ComandasService.getPlatosTiempoEsperaExcedido(comanda).then(function(comandas){
-                    console.log(comandas);
+                    //console.log(comandas);
                     for(var i=0; i < comandas.length-1; i++) {
                         //console.log(comandas[i]);
                         var detalles = Object.getOwnPropertyNames(comandas[i].detalles);
@@ -137,7 +137,7 @@
                         });
                     }
                 }).catch(function(data){
-                    console.log(data);
+                    //console.log(data);
                 });
             }, 300000); //5 minutos
             //}, 600000); //10 minutos
@@ -153,7 +153,7 @@
                     var aviso = {usuario_id: UserService.getFromToken().data.id, aviso: armarAvisoComandaNoEntregada(comandas)};
 
                     AvisosService.create(aviso).then(function(data){
-                        console.log('armo el aviso');
+                        //console.log('armo el aviso');
                         if(data > 0) {
                             loadAvisos();
                             var mensaje = '';
@@ -187,22 +187,22 @@
                             }
                             mensaje = mensaje + '</tbody></table></div>';
 
-                            console.log('Se armo el mail de avisos');
+                            //console.log('Se armo el mail de avisos');
                             var sucursalHeader = 'Sucursal:' + sucursal + ' Caja: ' + getCaja() + ' Fecha: ' + new Date().getDate() + '/' + (new Date().getMonth() + 1) + '/' + new Date().getFullYear();
 
                             ContactsService.sendMail(window.mailAdmin, mailAdmins, 'Mail de Comandas No Entregadas', sucursalHeader, mensaje).then(function (data) {
-                                console.log(data);
+                                //console.log(data);
                                 //loadAvisos();
                             }).catch(function(data){
-                                console.log(data);
+                                //console.log(data);
                             });
                         }
                     }).catch(function(data){
-                        console.log(data);
+                        //console.log(data);
                     });
 
                 }).catch(function(data){
-                    console.log(data);
+                    //console.log(data);
                 });
             }, 28800000); //8 horas
 
@@ -219,18 +219,18 @@
                         mailAdmins.push(mailAdmin);
                     }
                 }).catch(function(data){
-                    console.log(data);
+                    //console.log(data);
                 });
 
                 StockService.getAReponer(UserService.getFromToken().data.sucursal_id).then(function(aReponer){
-                    console.log(aReponer);
+                    //console.log(aReponer);
                     if(aReponer.length > 0) {
                         vm.aReponer = aReponer;
                         var aviso = {usuario_id: UserService.getFromToken().data.id, aviso: armarAvisoStockAReponer(aReponer)};
                         //loadAvisos();
 
                         AvisosService.create(aviso).then(function(data){
-                            console.log('Paso 1 hr - ' + new Date().getHours() + ':' + new Date().getMinutes());
+                            //console.log('Paso 1 hr - ' + new Date().getHours() + ':' + new Date().getMinutes());
                             if(data > 0) {
                                 loadAvisos();
                                 var mensaje = '';
@@ -250,7 +250,7 @@
 
                                 mensaje = mensaje + '<table style="width:100%;"><thead><tr>';
                                 mensaje = mensaje + '<th style="border: 1px solid black;background-color:#293333;color:#fff;padding: 5px 0;">Producto</th>';
-                                mensaje = mensaje + '<th style="border: 1px solid black;background-color:#293333;color:#fff;padding: 5px 0;">Pto. Reposición</th>';
+                                mensaje = mensaje + '<th style="border: 1px solid black;background-color:#293333;color:#fff;padding: 5px 0;">Pto. Reposiciï¿½n</th>';
                                 mensaje = mensaje + '<th style="border: 1px solid black;background-color:#293333;color:#fff;padding: 5px 0;">Cant. Actual</th>';
                                 mensaje = mensaje + '</tr></thead><tbody>';
 
@@ -264,23 +264,23 @@
                                 }
                                 mensaje = mensaje + '</tbody></table></div>';
 
-                                console.log('Se armo el mail de avisos');
+                                //console.log('Se armo el mail de avisos');
                                 var sucursalHeader = 'Sucursal:' + sucursal + ' Caja: ' + getCaja() + ' Fecha: ' + new Date().getDate() + '/' + (new Date().getMonth() + 1) + '/' + new Date().getFullYear();
 
                                 ContactsService.sendMail(window.mailAdmin, mailAdmins, 'Mail de Avisos', sucursalHeader, mensaje).then(function (data) {
-                                    console.log(data);
+                                    //console.log(data);
                                     //loadAvisos();
                                 }).catch(function(data){
-                                    console.log(data);
+                                    //console.log(data);
                                 });
                             }
                         }).catch(function(data){
-                            console.log(data);
+                            //console.log(data);
                         })
 
                     }
                 }).catch(function(data){
-                    console.log(data);
+                    //console.log(data);
                 });
                 //}, 10000);
                 //}, 600000); //10 minutos

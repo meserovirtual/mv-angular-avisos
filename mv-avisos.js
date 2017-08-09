@@ -108,7 +108,7 @@
             return $http.post(url,
                 {function: 'remove', 'aviso_id': aviso_id})
                 .then(function (data) {
-                    console.log(data);
+                    //console.log(data);
                     if (data.status == 200) {
                         AvisosVars.clearCache = true;
                         return data;

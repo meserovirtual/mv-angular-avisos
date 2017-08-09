@@ -48,7 +48,7 @@
                 else {
                     vm.aviso = {};
                     loadAvisos();
-                    MvUtils.showMessage('success', 'La operación se realizó satisfactoriamente');
+                    MvUtils.showMessage('success', 'La operaciï¿½n se realizï¿½ satisfactoriamente');
                 }
             }).catch(function (data) {
                 vm.aviso = {};
@@ -66,10 +66,10 @@
             if(vm.aviso.aviso_id == undefined) {
                 alert('Debe seleccionar una aviso');
             } else {
-                var result = confirm('¿Esta seguro que desea eliminar el aviso seleccionada?');
+                var result = confirm('ï¿½Esta seguro que desea eliminar el aviso seleccionada?');
                 if(result) {
                     AvisosService.remove(vm.aviso.aviso_id).then(function(data){
-                        console.log(data);
+                        //console.log(data);
                         if(data.status == 200) {
                             vm.aviso = {};
                             vm.detailsOpen = false;
@@ -79,7 +79,7 @@
                             MvUtils.showMessage('error', 'Error borrando el registro');
                         }
                     }).catch(function(data){
-                        console.log(data);
+                        //console.log(data);
                     });
                 }
             }
@@ -95,7 +95,7 @@
         }
 
 
-        // Implementación de la paginación
+        // Implementaciï¿½n de la paginaciï¿½n
         vm.start = 0;
         vm.limit = AvisosVars.paginacion;
         vm.pagina = AvisosVars.pagina;
