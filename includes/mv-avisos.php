@@ -42,7 +42,7 @@ class Avisos extends Main
 
 //        $results = $db->get('avisos');
 
-        $results = $db->rawQuery('Select u.usuario_id, u.nombre, u.apellido, a.aviso_id, a.fecha, a.aviso from avisos a inner join usuarios u on u.usuario_id = a.usuario_id ORDER By a.fecha DESC;');
+        $results = $db->rawQuery('Select u.usuario_id, u.nombre, u.apellido, a.aviso_id, a.fecha, a.aviso from avisos a inner join usuarios u on u.usuario_id = a.usuario_id where empresa_id = ' . getEmpresa() . ' ORDER By a.fecha DESC;');
 
         echo json_encode($results);
     }
@@ -60,7 +60,8 @@ class Avisos extends Main
 
         $data = array(
             'usuario_id' => $aviso_decoded->usuario_id,
-            'aviso' => $aviso_decoded->aviso
+            'aviso' => $aviso_decoded->aviso,
+            'empresa_id' => getEmpresa()
         );
 
         $result = $db->insert('avisos', $data);
@@ -85,7 +86,7 @@ class Avisos extends Main
         $aviso_decoded = self::checkAviso(json_decode($params["aviso"]));
 
         $result = false;
-        foreach($aviso_decoded as $row){
+        foreach ($aviso_decoded as $row) {
             $db->where('aviso_id', $row->aviso_id);
             $data = array(
                 'usuario_id' => $row->usuario_id,
@@ -94,7 +95,6 @@ class Avisos extends Main
             $result = $db->update('avisos', $data);
 
         }
-
 
 
         if ($result) {
